@@ -23,6 +23,8 @@ export default function Home() {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [heroTitle, setHeroTitle] = useState("");
+  const [heroSubtitle, setHeroSubtitle] = useState("");
 
   async function loadMemories() {
     try {
@@ -85,6 +87,38 @@ export default function Home() {
   useEffect(() => {
     loadMemories();
   }, []);
+
+  useEffect(() => {
+    const title = "FLEROVIUM";
+    const subtitle = "Everything you experience can become a memory.";
+
+    let titleIndex = 0;
+    let subtitleIndex = 0;
+
+    const titleTimer = setInterval(() => {
+      titleIndex++;
+
+      setHeroTitle(title.slice(0, titleIndex));
+
+      if (titleIndex >= title.length) {
+        clearInterval(titleTimer);
+
+        const subtitleTimer = setInterval(() => {
+          subtitleIndex++;
+
+          setHeroSubtitle(subtitle.slice(0, subtitleIndex));
+
+          if (subtitleIndex >= subtitle.length) {
+            clearInterval(subtitleTimer);
+          }
+        }, 45);
+      }
+    }, 160);
+
+    return () => {
+      clearInterval(titleTimer);
+    };
+  }, []);  
 
   const todayMemories = useMemo(() => {
     const today = new Date();
@@ -214,22 +248,33 @@ export default function Home() {
               <div>
                 <div className="hero-label">YOUR PERSONAL MEMORY SYSTEM</div>
 
-                <h2>
-                  Everything you experience
-                  <br />
-                  can become a memory.
+                <h2 className="hero-title">
+                  <span>{heroTitle}</span>
+                  <span className="typing-cursor">_</span>
                 </h2>
 
-                <p>
-                  Capture what happened. Flerovium will gradually learn how
-                  your life, work and habits fit together.
+                <p className="hero-subtitle">
+                  <span>{heroSubtitle}</span>
+                  <span className="typing-cursor">_</span>
                 </p>
               </div>
 
               <div className="hero-orbit">
-                <div className="orbit-ring ring-one" />
-                <div className="orbit-ring ring-two" />
-                <div className="orbit-core">F</div>
+                <div className="orbit-ring ring-one">
+                  <span className="electron electron-one" />
+                </div>
+
+                <div className="orbit-ring ring-two">
+                  <span className="electron electron-two" />
+                </div>
+
+                <div className="orbit-ring ring-three">
+                  <span className="electron electron-three" />
+                </div>
+
+                <div className="orbit-core">
+                  <span>F</span>
+                </div>
               </div>
             </section>
 
@@ -550,6 +595,37 @@ function AnalysisCard({
   );
 }
 
+function getMemoryTheme(memory: Memory) {
+  const category = memory.category?.toLowerCase();
+
+  switch (category) {
+    case "personal":
+      return "theme-purple";
+    case "health":
+      return "theme-green";
+    case "finance":
+      return "theme-gold";
+    case "social":
+      return "theme-cyan";
+    case "learning":
+      return "theme-blue";
+    case "travel":
+      return "theme-teal";
+    case "food":
+      return "theme-orange";
+    case "work":
+      return "theme-red";
+    case "goal":
+      return "theme-violet";
+    case "device":
+      return "theme-silver";
+    case "ai_insight":
+      return "theme-pink";
+    default:
+      return "theme-purple";
+  }
+}
+
 function MemoryCard({
   memory,
   formatDate,
@@ -558,7 +634,7 @@ function MemoryCard({
   formatDate: (timestamp: string) => string;
 }) {
   return (
-    <article className="memory-card">
+    <article className={`memory-card ${getMemoryTheme(memory)}`}>
       <div className="memory-card-header">
         <div className="memory-icon">✦</div>
 
